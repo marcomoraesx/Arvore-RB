@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1703941076 source:/home/marco/Faculdade/P3/AED2/ATT_AED2_03/main.c
+	<stdio.h>
+	<stdlib.h>
+	"tree_rb.h"
+
+1703941812 /home/marco/Faculdade/P3/AED2/ATT_AED2_03/tree_rb.h
+
