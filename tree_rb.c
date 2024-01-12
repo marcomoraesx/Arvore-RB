@@ -48,7 +48,45 @@ void inserir (arvore *raiz, int valor){
 }
 
 void ajustar (arvore *raiz, arvore elemento) {
-
+    //Buscar todas as sequências de elementos que tem a cor VERMELHO e corrigir
+    while (cor(elemento->pai) == VERMELHO && cor(elemento) == VERMELHO) {
+        //Recolorir
+        if (cor(tio(elemento)) == VERMELHO) {
+            tio(elemento)->cor = PRETO;
+            elemento->pai->cor = PRETO;
+            avo(elemento)->cor = VERMELHO;
+            elemento = avo(elemento);
+            continue;
+        }
+        //Rotação simples à direita
+        if (eh_filho_esquerdo(elemento) && eh_filho_esquerdo(elemento->pai)) {
+            rotacao_simples_direita(raiz, avo(elemento));
+            elemento->pai->cor = PRETO;
+            elemento->pai->dir->cor = VERMELHO;
+            continue;
+        }
+        //Rotação simples à esquerda
+        if (eh_filho_direito(elemento) && eh_filho_direito(elemento->pai)) {
+            rotacao_simples_esquerda(raiz, avo(elemento));
+            elemento->pai->cor = PRETO;
+            elemento->pai->esq->cor = VERMELHO;
+            continue;
+        }
+        //Rotação dupla à direita
+        if (eh_filho_direito(elemento) && eh_filho_esquerdo(elemento->pai)) {
+            rotacao_simples_esquerda(raiz, elemento->pai);
+            rotacao_simples_direita(raiz, elemento->pai);
+            continue;
+        }
+        //Rotação dupla à esquerda
+        if (eh_filho_esquerdo(elemento) && eh_filho_direito(elemento->pai)) {
+            rotacao_simples_direita(raiz, elemento->pai);
+            rotacao_simples_esquerda(raiz, elemento->pai);
+            continue;
+        }
+    }
+    //Reajustar a cor da raiz para PRETO
+    (*raiz)->cor = PRETO;
 }
 
 enum cor cor(arvore elemento) {
@@ -115,41 +153,55 @@ void imprimir (arvore raiz) {
     printf(")");
 }
 
-arvore rotacao_simples_esquerda(arvore pivo) {
-    arvore u, t1, t2, t3;
+void rotacao_simples_esquerda(arvore *raiz, arvore pivo) {
+    arvore u, t1;
     u = pivo->dir;
-    t1 = pivo->esq;
-    t2 = u->esq;
-    t3 = u->dir;
-    u->esq = pivo;
-    pivo->dir = t2;
-    return u;
+    t1 = u->esq;
+    int posicao_pivo_dir = eh_filho_direito(pivo);
+    pivo->dir = t1;
+    if (t1 != NULL) {
+        t1->pai = pivo;
+        u->esq = pivo;
+        u->pai = pivo->pai;
+        pivo->pai = u;
+        if (eh_raiz(u)) {
+            *raiz = u;
+        } else {
+            if (posicao_pivo_dir) {
+                u->pai->dir = u;
+            } else {
+                u->pai->esq = u;
+            }
+        }
+    }
 }
 
-arvore rotacao_simples_direita(arvore pivo) {
-    arvore u, t1, t2, t3;
+void rotacao_simples_direita(arvore *raiz, arvore pivo) {
+    arvore u, t1;
     u = pivo->esq;
-    t1 = pivo->dir;
-    t2 = u->esq;
-    t3 = u->dir;
-    u->dir = pivo;
-    pivo->esq = t3;
-    return u;
-}
-
-arvore rotacao_dupla_direita(arvore pivo) {
-    pivo->esq = rotacao_simples_esquerda(pivo->esq);
-    return rotacao_simples_direita(pivo);
-}
-
-arvore rotacao_dupla_esquerda(arvore pivo) {
-    pivo->dir = rotacao_simples_direita(pivo->dir);
-    return rotacao_simples_esquerda(pivo);
+    t1 = u->dir;
+    int posicao_pivo_esq = eh_filho_esquerdo(pivo);
+    pivo->esq = t1;
+    if (t1 != NULL) {
+        t1->pai = pivo;
+        u->dir = pivo;
+        u->pai = pivo->pai;
+        pivo->pai = u;
+        if (eh_raiz(u)) {
+            *raiz = u;
+        } else {
+            if (posicao_pivo_esq) {
+                u->pai->esq = u;
+            } else {
+                u->pai->dir = u;
+            }
+        }
+    }
 }
 
 void preorder(arvore raiz){
     if(raiz != NULL) {
-        printf("[%d]", raiz->dado);
+        imprimir_elemento(raiz);
         preorder(raiz->esq);
         preorder(raiz->dir);
     }
@@ -158,7 +210,7 @@ void preorder(arvore raiz){
 void inorder(arvore raiz){
     if(raiz != NULL) {
         inorder(raiz->esq);
-        printf("[%d]", raiz->dado);
+        imprimir_elemento(raiz);
         inorder(raiz->dir);
     }
 }
@@ -167,7 +219,7 @@ void posorder(arvore raiz) {
     if(raiz != NULL) {
         posorder(raiz->esq);
         posorder(raiz->dir);
-        printf("[%d]", raiz->dado);
+        imprimir_elemento(raiz);
     }
 }
 
@@ -339,6 +391,18 @@ int somatorio(arvore raiz){
 
 void remover(arvore *raiz, int valor) {
 
+}
+
+void retira_duplo_preto(arvore *raiz, arvore elemento) {
+    if (elemento == no_null) {
+        if (eh_filho_esquerdo(elemento)) {
+            elemento->pai->esq = NULL;
+        } else {
+            elemento->pai->dir = NULL;
+        }
+    } else {
+        elemento->cor = PRETO;
+    }
 }
 
 int menor_valor(arvore raiz) {

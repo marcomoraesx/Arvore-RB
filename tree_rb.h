@@ -23,10 +23,8 @@ void imprimir(arvore raiz);
 
 void ajustar(arvore *raiz, arvore elemento);
 void reajustar(arvore *raiz, arvore elemento);
-arvore rotacao_simples_esquerda(arvore pivo);
-arvore rotacao_simples_direita(arvore pivo);
-//arvore rotacao_dupla_esquerda(arvore pivo);
-//arvore rotacao_dupla_direita(arvore pivo);
+void rotacao_simples_esquerda(arvore *raiz, arvore pivo);
+void rotacao_simples_direita(arvore *raiz, arvore pivo);
 
 void preorder(arvore raiz);
 void inorder(arvore raiz);
