@@ -76,12 +76,16 @@ void ajustar (arvore *raiz, arvore elemento) {
         if (eh_filho_direito(elemento) && eh_filho_esquerdo(elemento->pai)) {
             rotacao_simples_esquerda(raiz, elemento->pai);
             rotacao_simples_direita(raiz, elemento->pai);
+            elemento->cor = PRETO;
+            elemento->dir->cor = VERMELHO;
             continue;
         }
         //Rotação dupla à esquerda
         if (eh_filho_esquerdo(elemento) && eh_filho_direito(elemento->pai)) {
             rotacao_simples_direita(raiz, elemento->pai);
             rotacao_simples_esquerda(raiz, elemento->pai);
+            elemento->cor = PRETO;
+            elemento->esq->cor = VERMELHO;
             continue;
         }
     }
@@ -391,6 +395,45 @@ int somatorio(arvore raiz){
 
 void remover(arvore *raiz, int valor) {
 
+}
+
+void reajustar(arvore *raiz, arvore elemento) {
+    //CASO 1 - Elemento é a raiz
+    if (eh_raiz(elemento)) {
+        elemento->cor = PRETO;
+        if (elemento == no_null) {
+            *raiz = NULL;
+        }
+        return;
+    }
+    //CASO 2 - Seu pai é PRETO, seu irmão é VERMELHO e seus sobrinhos são PRETOS
+    if (cor(irmao(elemento)) == VERMELHO && cor(elemento->pai) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+        return;
+    }
+    //CASO 3 - Seu pai é PRETO, seu irmão é PRETO e seus sobrinhos são PRETOS
+    if (cor(elemento->pai) == PRETO && cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+        return;
+    }
+    //CASO 4 - Seu pai é VERMELHO, seu irmão é PRETO e seus sobrinhos são PRETOS
+    if (cor(elemento>pai) == VERMELHO && cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+        return;
+    }
+    //CASO 5a - Independe da cor do pai, seu irmão é PRETO, seu sobrinho esquerdo é VERMELHO e seu sobrinho direito é PRETO
+    if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == VERMELHO && cor(irmao(elemento)->dir) == PRETO) {
+        return;
+    }
+    //CASO 5b - Independe da cor do pai, seu irmão é PRETO, seu sobrinho direito é VERMELHO e seu sobrinho esquerdo é PRETO
+    if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == VERMELHO) {
+        return;
+    }
+    //CASO 6a - Independe da cor do pai, seu irmão é PRETO, independe da cor do sobrinho esquerdo e seu sobrinho direito é VERMELHO
+    if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->dir) == VERMELHO) {
+        return;
+    }
+    //CASO 6b - Independe da cor do pai, seu irmão é PRETO, independe da cor do sobrinho direito e seu sobrinho esquerdo é VERMELHO
+    if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == VERMELHO) {
+        return;
+    }
 }
 
 void retira_duplo_preto(arvore *raiz, arvore elemento) {
