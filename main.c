@@ -47,7 +47,7 @@ int main(int argc, char *argv) {
                 break;
             case 9:
                 scanf("%d", &valor);
-                remover(a, valor);
+                remover(&a, valor);
                 preorder(a);
                 printf("\n");
                 break;

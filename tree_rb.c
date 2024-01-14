@@ -18,7 +18,6 @@ void inserir (arvore *raiz, int valor){
     arvore posicao, pai, novo;
     posicao = *raiz;
     pai = NULL;
-
     while(posicao != NULL) {
         pai = posicao;
         if (valor > posicao->dado) {
@@ -27,14 +26,12 @@ void inserir (arvore *raiz, int valor){
             posicao = posicao->esq;
         }
     }
-
     novo = (arvore) malloc(sizeof(struct no));
     novo->dado = valor;
     novo->esq = NULL;
     novo->dir = NULL;
     novo->pai = pai;
     novo->cor = VERMELHO;
-
     if (eh_raiz(novo)) {
         *raiz = novo;
     } else {
@@ -128,15 +125,13 @@ arvore tio (arvore elemento) {
 }
 
 arvore avo (arvore elemento) {
-    if (elemento->pai->pai != NULL) {
-        return elemento->pai->pai;
-    }
+    return elemento->pai->pai;
 }
 
 void imprimir_elemento(arvore raiz) {
     switch (raiz->cor) {
         case PRETO:
-            printf("\x1b[30m[%d]\x1b[0m", raiz->dado);
+            printf("\x1b[33m[%d]\x1b[0m", raiz->dado);
             break;
         case VERMELHO:
             printf("\x1b[31m[%d]\x1b[0m", raiz->dado);
@@ -230,7 +225,7 @@ void posorder(arvore raiz) {
 void reverso(arvore raiz){
     if(raiz != NULL) {
         reverso(raiz->dir);
-        printf("[%d]", raiz->dado);
+        imprimir_elemento(raiz);
         reverso(raiz->esq);
     }
 }
@@ -394,7 +389,82 @@ int somatorio(arvore raiz){
 }
 
 void remover(arvore *raiz, int valor) {
-
+    arvore posicao;
+    posicao = raiz;
+    while (posicao != NULL) {
+        if (valor == posicao->dado) {
+            if (posicao->esq != NULL && posicao->dir != NULL) {
+                posicao->dado = maior_valor(posicao->esq);
+                remover(raiz, &(posicao->esq));
+                break;
+            }
+            //Possui apenas o filho direito
+            if (posicao->esq == NULL && posicao->dir != NULL) {
+                posicao->dir->cor = PRETO;
+                posicao->dir->pai = posicao->pai;
+                if (eh_raiz(posicao)) {
+                    *raiz = posicao->dir;
+                } else {
+                    if (eh_filho_esquerdo(posicao)) {
+                        posicao->pai->esq = posicao->dir;
+                    } else {
+                        posicao->pai->dir = posicao->dir;
+                    }
+                }
+                free(posicao);
+                break;
+            }
+            //Possui apenas o filho esquerdo
+            if (posicao->esq != NULL && posicao->dir == NULL) {
+                posicao->esq->cor = PRETO;
+                posicao->esq->pai = posicao->pai;
+                if (eh_raiz(posicao)) {
+                    *raiz = posicao->esq;
+                } else {
+                    if (eh_filho_esquerdo(posicao)) {
+                        posicao->pai->esq = posicao->esq;
+                    } else {
+                        posicao->pai->dir = posicao->esq;
+                    }
+                }
+                free(posicao);
+                break;
+            }
+            //Possui os dois filhos
+            if (posicao->esq == NULL && posicao->dir == NULL) {
+                if (eh_raiz(posicao)) {
+                    *raiz = NULL;
+                    free(posicao);
+                    break;
+                }
+                if (posicao->cor == VERMELHO) {
+                    if (eh_filho_esquerdo(posicao)) {
+                        posicao->pai->esq = NULL;
+                    } else {
+                        posicao->pai->dir = NULL;
+                    }
+                    free(posicao);
+                    break;
+                } else {
+                    no_null->cor = DUPLO_PRETO;
+                    no_null->pai = posicao->pai;
+                    if (eh_filho_esquerdo(posicao)) {
+                        posicao->pai->esq = no_null;
+                    } else {
+                        posicao->pai->dir = no_null;
+                    }
+                    free(posicao);;
+                    reajustar(raiz, no_null);
+                    break;
+                }
+            }
+        }
+        if (valor > posicao->dado) {
+            posicao = posicao->dir;
+        } else {
+            posicao = posicao->esq;
+        }
+    }
 }
 
 void reajustar(arvore *raiz, arvore elemento) {
@@ -408,30 +478,61 @@ void reajustar(arvore *raiz, arvore elemento) {
     }
     //CASO 2 - Seu pai é PRETO, seu irmão é VERMELHO e seus sobrinhos são PRETOS
     if (cor(irmao(elemento)) == VERMELHO && cor(elemento->pai) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+        if (eh_filho_esquerdo(elemento)) {
+            rotacao_simples_esquerda(raiz, elemento->pai);
+        } else {
+            rotacao_simples_direita(raiz, elemento->pai);
+        }
+        elemento->pai->cor = VERMELHO;
+        avo(elemento)->cor = PRETO;
+        reajustar(raiz, elemento);
         return;
     }
     //CASO 3 - Seu pai é PRETO, seu irmão é PRETO e seus sobrinhos são PRETOS
     if (cor(elemento->pai) == PRETO && cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+        retira_duplo_preto(raiz, elemento);
+        elemento->pai->cor = DUPLO_PRETO;
+        irmao(elemento)->cor = VERMELHO;
+        reajustar(raiz, elemento);
         return;
     }
     //CASO 4 - Seu pai é VERMELHO, seu irmão é PRETO e seus sobrinhos são PRETOS
     if (cor(elemento>pai) == VERMELHO && cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+        retira_duplo_preto(raiz, elemento);
+        elemento->pai->cor = PRETO;
+        irmao(elemento)->cor = VERMELHO;
         return;
     }
     //CASO 5a - Independe da cor do pai, seu irmão é PRETO, seu sobrinho esquerdo é VERMELHO e seu sobrinho direito é PRETO
     if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == VERMELHO && cor(irmao(elemento)->dir) == PRETO) {
+        rotacao_simples_direita(raiz, irmao(elemento));
+        irmao(elemento)->cor = PRETO;
+        irmao(elemento)->dir->cor = VERMELHO;
+        reajustar(raiz, elemento);
         return;
     }
     //CASO 5b - Independe da cor do pai, seu irmão é PRETO, seu sobrinho direito é VERMELHO e seu sobrinho esquerdo é PRETO
     if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == VERMELHO) {
+        rotacao_simples_esquerda(raiz, irmao(elemento));
+        irmao(elemento)->cor = PRETO;
+        irmao(elemento)->esq->cor = VERMELHO;
+        reajustar(raiz, elemento);
         return;
     }
     //CASO 6a - Independe da cor do pai, seu irmão é PRETO, independe da cor do sobrinho esquerdo e seu sobrinho direito é VERMELHO
     if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->dir) == VERMELHO) {
+        rotacao_simples_esquerda(raiz, elemento->pai);
+        retira_duplo_preto(raiz, elemento);
+        elemento->pai->cor = PRETO;
+        irmao(elemento->pai)->cor = PRETO;
         return;
     }
     //CASO 6b - Independe da cor do pai, seu irmão é PRETO, independe da cor do sobrinho direito e seu sobrinho esquerdo é VERMELHO
     if (cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == VERMELHO) {
+        rotacao_simples_direita(raiz, elemento->pai);
+        retira_duplo_preto(raiz, elemento);
+        elemento->pai->cor = PRETO;
+        irmao(elemento->pai)->cor = PRETO;
         return;
     }
 }
