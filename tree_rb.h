@@ -48,8 +48,8 @@ void dobro(arvore raiz);
 int busca(arvore raiz, int valor);
 void descendentes(arvore raiz, int valor);
 int altura(arvore raiz);
-int menor_valor(arvore raiz);
-int maior_valor(arvore raiz);
+int maior_elemento(arvore raiz);
+int menor_elemento(arvore raiz);
 
 int somatorio(arvore raiz);
 void mesclar (arvore raiz1, arvore raiz2);

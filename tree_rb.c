@@ -259,12 +259,22 @@ int qtde_par(arvore raiz){
     return ant;
 }*/
 
-int maior_valor(arvore raiz) {
-    int maior = raiz->dado ? raiz->dado : NULL;
-    if (raiz != NULL && raiz->dir != NULL) {
-        maior = maior_valor(raiz->dir);
-    }
-    return maior;
+int maior_elemento(arvore raiz) {
+	if(raiz == NULL)
+        return -1;
+	if(raiz->dir == NULL)
+		return raiz->dado;
+	else
+		return maior_elemento(raiz->dir);
+}
+
+int menor_elemento(arvore raiz) {
+	if(raiz == NULL)
+        return -1;
+	if(raiz->esq == NULL)
+		return raiz->dado;
+	else
+		return maior_elemento(raiz->esq);
 }
 
 int antecessor(arvore raiz, int valor) {
@@ -278,7 +288,7 @@ int antecessor(arvore raiz, int valor) {
             raiz_atual = raiz_atual->dir;
         } else {
             if (raiz_atual->esq != NULL) {
-                return maior_valor(raiz_atual->esq);
+                return maior_elemento(raiz_atual->esq);
             } else {
                 if (candidato != NULL) {
                     return candidato->dado;
@@ -390,12 +400,12 @@ int somatorio(arvore raiz){
 
 void remover(arvore *raiz, int valor) {
     arvore posicao;
-    posicao = raiz;
+    posicao = *raiz;
     while (posicao != NULL) {
         if (valor == posicao->dado) {
             if (posicao->esq != NULL && posicao->dir != NULL) {
-                posicao->dado = maior_valor(posicao->esq);
-                remover(raiz, &(posicao->esq));
+                posicao->dado = maior_elemento(posicao->esq);
+                remover(&(posicao->esq), posicao->dado);
                 break;
             }
             //Possui apenas o filho direito
@@ -497,7 +507,7 @@ void reajustar(arvore *raiz, arvore elemento) {
         return;
     }
     //CASO 4 - Seu pai é VERMELHO, seu irmão é PRETO e seus sobrinhos são PRETOS
-    if (cor(elemento>pai) == VERMELHO && cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
+    if (cor(elemento->pai) == VERMELHO && cor(irmao(elemento)) == PRETO && cor(irmao(elemento)->esq) == PRETO && cor(irmao(elemento)->dir) == PRETO) {
         retira_duplo_preto(raiz, elemento);
         elemento->pai->cor = PRETO;
         irmao(elemento)->cor = VERMELHO;
@@ -547,12 +557,4 @@ void retira_duplo_preto(arvore *raiz, arvore elemento) {
     } else {
         elemento->cor = PRETO;
     }
-}
-
-int menor_valor(arvore raiz) {
-    int menor = raiz->dado ? raiz->dado : NULL;
-    if (raiz->esq != NULL) {
-        menor = menor_valor(raiz->esq);
-    }
-    return menor;
 }
