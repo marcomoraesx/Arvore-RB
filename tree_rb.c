@@ -160,17 +160,17 @@ void rotacao_simples_esquerda(arvore *raiz, arvore pivo) {
     pivo->dir = t1;
     if (t1 != NULL) {
         t1->pai = pivo;
-        u->esq = pivo;
-        u->pai = pivo->pai;
-        pivo->pai = u;
-        if (eh_raiz(u)) {
-            *raiz = u;
+    }
+    u->esq = pivo;
+    u->pai = pivo->pai;
+    pivo->pai = u;
+    if (eh_raiz(u)) {
+        *raiz = u;
+    } else {
+        if (posicao_pivo_dir) {
+            u->pai->dir = u;
         } else {
-            if (posicao_pivo_dir) {
-                u->pai->dir = u;
-            } else {
-                u->pai->esq = u;
-            }
+            u->pai->esq = u;
         }
     }
 }
@@ -183,18 +183,18 @@ void rotacao_simples_direita(arvore *raiz, arvore pivo) {
     pivo->esq = t1;
     if (t1 != NULL) {
         t1->pai = pivo;
-        u->dir = pivo;
-        u->pai = pivo->pai;
-        pivo->pai = u;
-        if (eh_raiz(u)) {
-            *raiz = u;
-        } else {
-            if (posicao_pivo_esq) {
-                u->pai->esq = u;
-            } else {
-                u->pai->dir = u;
-            }
-        }
+    }
+    u->dir = pivo;
+    u->pai = pivo->pai;
+    pivo->pai = u;
+    if (eh_raiz(u)) {
+      *raiz = u;
+    } else {
+       if (posicao_pivo_esq) {
+          u->pai->esq = u;
+       } else {
+          u->pai->dir = u;
+       }
     }
 }
 
@@ -463,7 +463,7 @@ void remover(arvore *raiz, int valor) {
                     } else {
                         posicao->pai->dir = no_null;
                     }
-                    free(posicao);;
+                    free(posicao);
                     reajustar(raiz, no_null);
                     break;
                 }
@@ -503,7 +503,7 @@ void reajustar(arvore *raiz, arvore elemento) {
         retira_duplo_preto(raiz, elemento);
         elemento->pai->cor = DUPLO_PRETO;
         irmao(elemento)->cor = VERMELHO;
-        reajustar(raiz, elemento);
+        reajustar(raiz, elemento->pai);
         return;
     }
     //CASO 4 - Seu pai é VERMELHO, seu irmão é PRETO e seus sobrinhos são PRETOS
