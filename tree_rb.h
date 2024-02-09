@@ -15,7 +15,7 @@ typedef no * arvore;
 
 void inicializar(arvore *raiz);
 void inserir (arvore *raiz, int valor);
-void remover (arvore *raiz, int valor);
+void remover (arvore *raiz, arvore temp, int valor);
 
 int maior(int a, int b);
 void imprimir_elemento(arvore raiz);

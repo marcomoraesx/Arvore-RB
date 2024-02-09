@@ -398,16 +398,16 @@ int somatorio(arvore raiz){
         soma += raiz->dado + somatorio(raiz->esq) + somatorio(raiz->dir);
     }
     return soma;
-}d
+}
 
-void remover(arvore *raiz, int valor) {
+void remover(arvore *raiz, arvore temp, int valor) {
     arvore posicao;
-    posicao = *raiz;
+    posicao = temp;
     while (posicao != NULL) {
         if (valor == posicao->dado) {
             if (posicao->esq != NULL && posicao->dir != NULL) {
                 posicao->dado = maior_elemento(posicao->esq);
-                remover(&(posicao->esq), posicao->dado);
+                remover(raiz, posicao->esq, posicao->dado);
                 break;
             }
             //Possui apenas o filho direito
