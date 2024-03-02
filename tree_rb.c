@@ -14,6 +14,45 @@ void inicializar(arvore *raiz) {
     no_null->pai = NULL;
 }
 
+int valida_rb(arvore raiz) {
+    if (raiz == NULL) {
+        return 1;
+    }
+    if (raiz->pai == NULL) {
+        if (cor(raiz) != PRETO) {
+            return 0;
+        }
+    }
+    if (cor(raiz) != PRETO && cor(raiz) != VERMELHO) {
+        return 0;
+    }
+    if (cor(raiz) == VERMELHO && (cor(raiz->esq) != PRETO || cor(raiz->dir) != PRETO)) {
+        return 0;
+    }
+    if (((caminho_pretos(raiz->esq) + 1) != (caminho_pretos(raiz->dir) + 1)) && cor(raiz) == PRETO) {
+        return 0;
+    }
+    if (valida_rb(raiz->esq) && valida_rb(raiz->dir)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int caminho_pretos(arvore raiz) {
+    if (raiz == NULL) {
+        return 1;
+    } else if (cor(raiz) == PRETO) {
+        int esq = caminho_pretos(raiz->esq);
+        int dir = caminho_pretos(raiz->dir);
+        return 1 + (esq > dir ? esq : dir);
+    } else {
+        int esq = caminho_pretos(raiz->esq);
+        int dir = caminho_pretos(raiz->dir);
+        return (esq > dir ? esq : dir);
+    }
+}
+
 void inserir (arvore *raiz, int valor){
     arvore posicao, pai, novo;
     posicao = *raiz;

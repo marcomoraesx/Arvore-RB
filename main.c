@@ -71,6 +71,14 @@ int main(int argc, char *argv) {
             case 16:
                 printf("%d\n", altura(a));
                 break;
+            case 17:
+                int result = valida_rb(a);
+                if (result) {
+                    printf("valida!\n");
+                } else {
+                    printf("invalida!\n");
+                }
+                printf("\n");
             case 99:
                 break;
 
